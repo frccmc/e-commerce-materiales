@@ -7,19 +7,13 @@ import java.util.Scanner;
 public class Main {
 
   public static void main(String[] args) {
-    ArrayList<String> listaProductos = new ArrayList<>();
-    listaProductos.add("Bloque EPS");
-    listaProductos.add("Ladrillo cerámico");
-    listaProductos.add("Ladrillo de hormigón");
-    listaProductos.add("Ladrillo macizo");
-    listaProductos.add("Ladrillo retak");
-    listaProductos.add("Perfil PGC");
-    listaProductos.add("Perfil PGU");
+
+    ArrayList<Producto> listaProductos = obtenerProductos();
 
     Scanner entrada = new Scanner(System.in);
 
     int opcionUsuario;
-    System.out.println("Bienvenido a materiales Hanoteriales");
+    System.out.println("Bienvenido a materiales Hano");
     label:
     while(true) {
       System.out.println("""
@@ -63,14 +57,28 @@ public class Main {
       }
     }
   }
-  public static String formatearNombre(String nombreFormatear){
+  public static ArrayList<Producto> obtenerProductos(){
+    ArrayList<Producto> productos = new ArrayList<>();
+    productos.add(new Producto("Bloque EPS"));
+    productos.add(new Producto("Ladrillo cerámico"));
+    productos.add(new Producto("Ladrillo de hormigón"));
+    productos.add(new Producto("Ladrillo macizo"));
+    productos.add(new Producto("Ladrillo retak"));
+    productos.add(new Producto("Perfil PGC"));
+    productos.add(new Producto("Perfil PGU"));
+    return productos;
+  }
+  public static String formatearNombre(Producto nombreFormatear){
+
     String nombreFormateado;
-    nombreFormateado = nombreFormatear.toLowerCase().trim();
+    String nombreFormatearCadena = nombreFormatear.nombre;
+    nombreFormateado = nombreFormatearCadena.toLowerCase().trim();
     return ignorarTildes(nombreFormateado);
   }
   public static String ignorarTildes(String texto) {
     String textoNormalizado = Normalizer.normalize(texto, Normalizer.Form.NFD);
     return textoNormalizado.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+    //NO LO TERMINO DE ENTENDER, LO HICE CON IA
   }
   public static void pausa(Scanner entrada) {
     System.out.println("""
@@ -80,28 +88,32 @@ public class Main {
         """);
     entrada.nextLine();
   }
-  public static void mostrarProductos(ArrayList <String> listaProductos){
-    if (listaProductos.isEmpty()) {
+  public static void mostrarProductos(ArrayList <Producto> lista){
+
+    //TODO: una f para acceder a cada producto
+
+    if (lista.isEmpty()) {
       System.out.println("En este momento no tenemos productos para mostrarte");
     } else {
       int contador = -1;
-      for (String producto : listaProductos) {
+      for (Producto material : lista) {
         contador++;
-        System.out.println(contador + " " + producto);
+        String materialNombre = material.nombre;
+        System.out.println(contador + " " + materialNombre);
       }
     }
     System.out.println(" ");
     //TODO: cambiar nombre de la entrada de lista, tiene el mismo que la lista original
   }
-  public static void buscarProducto(ArrayList <String> listaProductos, Scanner entrada){
+  public static void buscarProducto(ArrayList <Producto> listaProductos, Scanner entrada){
     //TODO: si pongo dos plabras que estan en dos productos distintos da mal
     System.out.println("¿Qué estás buscando?: ");
-    ArrayList<String> coincidenciasProductos = new ArrayList<>();
+    ArrayList<Producto> coincidenciasProductos = new ArrayList<>();
 
     String busqueda = entrada.nextLine();
 
-    for (String producto : listaProductos) {
-      if (formatearNombre(producto).contains(formatearNombre(busqueda))) {
+    for (Producto producto : listaProductos) {
+      if (formatearNombre(producto).contains(formatearNombre(new Producto(busqueda)))) {
         coincidenciasProductos.add(producto);
       }
     }
@@ -111,15 +123,15 @@ public class Main {
     }
     mostrarProductos(coincidenciasProductos);
   }
-  public static void agregarProducto(ArrayList <String> listaProductos, Scanner entrada){
+  public static void agregarProducto(ArrayList <Producto> listaProductos, Scanner entrada){
     System.out.println("Creación de producto");
     System.out.print("¿Qué producto deseás agregar?: ");
     String nombre = entrada.nextLine();
-    listaProductos.add(nombre);
+    listaProductos.add(new Producto(nombre));
     System.out.println("Producto agregado con éxito");
     //TODO: denegar la creacion si ya existe el producto
   }
-  public static void editarProducto(ArrayList <String> listaProductos, Scanner entrada){
+  public static void editarProducto(ArrayList <Producto> listaProductos, Scanner entrada){
     mostrarProductos(listaProductos);
     //TODO: formatear el nombre que se le ponga
     //TODO: agragar, validacion, si pone un numero que no existe imprimir un msj
@@ -130,11 +142,12 @@ public class Main {
     entrada.nextLine();
     System.out.print("Ingrese el nuevo nombre: ");
     nuevoProducto = entrada.nextLine();
-    listaProductos.set(productoEditar, nuevoProducto);
+
+    listaProductos.set(productoEditar, new Producto (nuevoProducto));
 
     System.out.println("Producto editado con éxito");
   }
-  public static void borrarProducto(ArrayList <String> listaProductos, Scanner entrada){
+  public static void borrarProducto(ArrayList <Producto> listaProductos, Scanner entrada){
     mostrarProductos(listaProductos);
     System.out.print("Ingrese el número del producto que desea borrar: ");
     int productoBorrar;
